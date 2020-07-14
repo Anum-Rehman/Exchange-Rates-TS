@@ -4,13 +4,13 @@ import { connect, ConnectedProps} from 'react-redux'
 import { getAllRates, setAllRates } from '../store/actions/index';
 
 const ExchangeRate = () => {
-    // useEffect(() => {
-    //     const rates = props.getRate({ FormName: '' });
-    //   });
+    useEffect(() => {
+        // const rates = props.getRate({ FormName: '' });
+      });
 
   return (
     <Grid>
-        <h1>Hello</h1>
+        <h1></h1>
     </Grid>
   );
 }
