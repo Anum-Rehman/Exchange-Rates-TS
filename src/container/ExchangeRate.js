@@ -25,7 +25,7 @@ const ExchangeRate = (props) => {
     const dispatch = useDispatch();
     const [open, setOpen] = React.useState(false);
     const [currency, setCurrency] = React.useState('USD');
-    const [convertTo, setConversion] = React.useState('');
+    const [convertTo, setConversion] = React.useState('AED');
     const [value, setValue] = React.useState(0.00);
     const [convertedVal, setConverted] = React.useState(0.00);
 
