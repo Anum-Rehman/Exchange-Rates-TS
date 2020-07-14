@@ -7,6 +7,7 @@ const initialState = {
   };
 
 export const rateReducer = (state = initialState, action) => {
+    console.log(action,"action")
     switch (action.type) {
         case RATES_SET_ALL:
             return { ...state, rates: action.payload, loading: false };
