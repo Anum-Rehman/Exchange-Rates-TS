@@ -1,74 +1,176 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Grid, Snackbar, Button } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import { Snackbar, Button, IconButton, TextField, MenuItem, Paper } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
-// import Snackbar from '@material-ui/core/Snackbar';
-import IconButton from '@material-ui/core/IconButton';
-import { connect} from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getAllRates } from '../store/actions';
 
+var currencies = [];
+var Rates;
+const useStyles = makeStyles((theme) => ({
+    root: {
+        display: 'flex',
+        flexWrap: 'wrap',
+    },
+    paperStyle: {
+        marginTop: 20,
+        padding: 20,
+        width: 400,
+        margin: 'auto'
+    }
+}));
+
 const ExchangeRate = (props) => {
+    const classes = useStyles();
+    const dispatch = useDispatch();
     const [open, setOpen] = React.useState(false);
+    const [currency, setCurrency] = React.useState('USD');
+    const [convertTo, setConversion] = React.useState('');
+    const [value, setValue] = React.useState(0.00);
+    const [convertedVal, setConverted] = React.useState(0.00);
 
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
-          return;
+            return;
         }
-    
+
         setOpen(false);
-      };
+    };
     useEffect(() => {
-        console.log(props,"props")
-        if(props.error){
-            setOpen(true);
-            return 
-        }
+        setTimeout(() => {
+            dispatch(getAllRates())
+        }, 1500)
+    }, []);
+    
+    useSelector(({ rate }) => {
+        if(rate.rates){
+            const currRate = rate.rates;
+            var currSym = Object.keys(currRate);
+            Rates = currRate
 
-        if(props.rates){
-            const rates = props.rates
-            console.log(rates, "rates")
-            return rates;
+            for(var i=0; i< currSym.length; i++){
+                let resp = {
+                    value: currSym[i],
+                    label: currSym[i],
+                }
+                currencies.push(resp);
+            }
+            return currencies
         }
-        props.getAllRates();
-      });
+        if(rate.error){
+            setOpen(true)
+        }
+    }
+    )
 
-  return (
-    <Grid>
-         <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        message="Note archived"
-        action={
-          <React.Fragment>
-            <Button color="secondary" size="small" onClick={handleClose}>
-              UNDO
+    const handleChange = (event) => {
+        setCurrency(event.target.value);
+    };
+
+    const convertAmount = () =>{
+        var curr = currency.toLowerCase();
+        var convCurr = convertTo.toLowerCase();
+        var amount = Number(value);
+        var currRate, convRate;
+
+        Object.keys(Rates).forEach((key)=>{
+            if(key.toLowerCase() == curr){
+                currRate = Rates[key];
+                return Number(currRate);
+            }
+            if(key.toLowerCase() == convCurr){
+                convRate = Rates[key];
+                return Number(convRate);
+            }
+        })
+        var calcAmount = amount/currRate;
+        var targetAmount = calcAmount * convRate;
+        setConverted(targetAmount)
+    }
+    return (
+        <div className={classes.root}>
+            <Snackbar
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                open={open}
+                autoHideDuration={6000}
+                onClose={handleClose}
+                message="Note archived"
+                action={
+                    <React.Fragment>
+                        <Button color="secondary" size="small" onClick={handleClose}>
+                            UNDO
             </Button>
-            <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          </React.Fragment>
-        }
-      />
-        <h1></h1>
-    </Grid>
-  );
+                        <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    </React.Fragment>
+                }
+            />
+            <div className="container">
+                <Paper elevation={3} className={classes.paperStyle}>
+                    <div className="row">
+                        <div className="col-sm-6 col-6">
+                            <TextField
+                                label="Size"
+                                id="outlined-size-small"
+                                defaultValue="0.00"
+                                variant="outlined"
+                                size="small"
+                                value= {value}
+                                onChange={(e)=>{setValue(e.target.value); convertAmount()}}
+                            />
+                        </div>
+                        <div className="col-sm-6 col-6">
+                            <TextField
+                                id="standard-select-currency"
+                                select
+                                label="Select"
+                                value={currency}
+                                onChange={handleChange}
+                                helperText="Please select your currency"
+                            >
+                                {currencies.map((option, index) => (
+                        <MenuItem key={index} value={option.value}>
+                            {option.label}
+                        </MenuItem>
+                    ))}
+                            </TextField>
+                        </div>
+                        <div className="col-sm-6 col-6">
+                            <TextField
+                                label="Size"
+                                value={convertedVal}
+                                disabled={true}
+                                id="outlined-size-small"
+                                defaultValue="Small"
+                                variant="outlined"
+                                size="small"
+                            />
+                        </div>
+                        <div className="col-sm-6 col-6">
+                            <TextField
+                                id="standard-select-currency"
+                                select
+                                label="Select"
+                                value={convertTo}
+                                onChange={(e)=>{setConversion(e.target.value); convertAmount()}}
+                                helperText="Please select your currency"
+                            >
+                                {currencies.map((option, index) => (
+                        <MenuItem key={index} value={option.value}>
+                            {option.label}
+                        </MenuItem>
+                    ))}
+                            </TextField>
+                        </div>
+                    </div>
+                </Paper>
+            </div>
+        </div>
+    );
 }
 
-const mapStateToProps = (state) => {
-    return {
-        rates: state.rates,
-        error: state.error,
-    }
-}
-
-const mapDispatchToProps = (dispatch) =>{
-    return{
-        getAllRates: () => dispatch(getAllRates()),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ExchangeRate);
+export default ExchangeRate;
