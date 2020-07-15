@@ -1,4 +1,4 @@
-import { RATES_SET_ALL, RATES_ERROR, RATES_GET_ALL, RATES_NULL } from "../types";
+import { RATES_SET_ALL, GET_ERROR, RATES_GET_ALL, RATES_NULL } from "../types";
 
 const initialState = {
     rates: null,
@@ -12,7 +12,7 @@ export const rateReducer = (state = initialState, action) => {
             return { ...state, rates: action.payload, loading: false };
         case RATES_GET_ALL:
             return { ...state, rates: action.payload, loading: false };
-        case RATES_ERROR:
+        case GET_ERROR:
             return { ...state, loading: false, error: action.payload };
         default:
             return state;
