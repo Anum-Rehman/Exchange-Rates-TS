@@ -53,6 +53,7 @@ const ExchangeRate = (props) => {
 
     const handleChange = (event) => {
         setCurrency(event.target.value);
+        convertAmount();
     };
 
     const convertAmount = () =>{
@@ -102,7 +103,7 @@ const ExchangeRate = (props) => {
                     <div className="row">
                         <div className="col-sm-6 col-6">
                             <TextField
-                                label="Size"
+                                label="Amount"
                                 id="outlined-size-small"
                                 defaultValue="0.00"
                                 variant="outlined"
@@ -115,7 +116,6 @@ const ExchangeRate = (props) => {
                             <TextField
                                 id="standard-select-currency"
                                 select
-                                label="Select"
                                 value={currency}
                                 onChange={handleChange}
                                 helperText="Please select your currency"
@@ -129,7 +129,7 @@ const ExchangeRate = (props) => {
                         </div>
                         <div className="col-sm-6 col-6">
                             <TextField
-                                label="Size"
+                                label="Convert To"
                                 value={convertedVal}
                                 disabled={true}
                                 id="outlined-size-small"
@@ -142,10 +142,9 @@ const ExchangeRate = (props) => {
                             <TextField
                                 id="standard-select-currency"
                                 select
-                                label="Select"
                                 value={convertTo}
                                 onChange={(e)=>{setConversion(e.target.value); convertAmount()}}
-                                helperText="Please select your currency"
+                                helperText="Please select conversion rate"
                             >
                                 {currencies.map((option, index) => (
                         <MenuItem key={index} value={option.value}>
