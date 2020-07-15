@@ -13,7 +13,6 @@ export const setAllRates = (rates) => {
         payload: rates
     }
 }
-
 export const getError = (error) => {
     return {
         type: GET_ERROR,
