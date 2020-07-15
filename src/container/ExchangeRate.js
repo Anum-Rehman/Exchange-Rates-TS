@@ -15,7 +15,7 @@ const ExchangeRate = (props) => {
         currencies: [],
         Rates: null,
         open: false,
-        currency: 'USD',
+        currency: 'EUR',
         convertTo: 'TRY',
         amount: 0,
         convertedVal: 0,
@@ -86,7 +86,7 @@ const ExchangeRate = (props) => {
                 setProperty({ ...property, amount: targetAmount })
             } else {
                 calcAmount = Number(property.amount) / currRate;
-                targetAmount = calcAmount * convRate;
+                targetAmount = parseFloat(calcAmount * convRate).toFixed(2);
                 setProperty({ ...property, convertedVal: targetAmount })
             }
         }
