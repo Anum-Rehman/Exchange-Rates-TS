@@ -1,4 +1,4 @@
-import { RATES_SET_ALL, GET_ERROR, RATES_GET_ALL } from "../types";
+import { SET_RATES, GET_ERROR, GET_RATES } from "../types";
 
 const initialState = {
     rates: null,
@@ -9,9 +9,9 @@ const initialState = {
 export const rateReducer = (state = initialState, action) => {
 
     switch (action.type) {
-        case RATES_SET_ALL:
+        case SET_RATES:
             return { ...state, rates: action.payload, loading: false };
-        case RATES_GET_ALL:
+        case GET_RATES:
             return { ...state, rates: action.payload, loading: false };
         case GET_ERROR:
             return { ...state, loading: false, error: action.payload };

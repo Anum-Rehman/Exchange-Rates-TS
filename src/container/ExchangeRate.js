@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Snackbar, Grid, IconButton, TextField, MenuItem, Paper, Container } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { useDispatch, useSelector } from 'react-redux'
-import { getAllRates } from '../store/actions';
+import { getRates } from '../store/actions';
 import Moment from 'react-moment';
 import useStyles from './styles';
 import InputText from '../components/InputText'
@@ -28,12 +28,12 @@ const ExchangeRate = (props) => {
         if (reason === 'clickaway') {
             return;
         }
-        setProperty({...property, open: false});
+        setProperty({ ...property, open: false });
     };
 
     // calling api on componentDidMount
     useEffect(() => {
-        dispatch(getAllRates());
+        dispatch(getRates());
     }, []);
 
     // getting rate from reducer
@@ -44,7 +44,7 @@ const ExchangeRate = (props) => {
         if (rate && rate.rates) {
             const { rates } = rate;
             setProperty({
-                ...property, 
+                ...property,
                 Rates: rates.rates,
                 currencies: Object.keys(rates.rates),
                 currUpdateDate: rates.time_last_update_utc
@@ -53,7 +53,7 @@ const ExchangeRate = (props) => {
 
         if (rate.error) {
             setProperty({
-                ...property, 
+                ...property,
                 error: rate.error.message,
                 open: true,
             });
@@ -83,11 +83,11 @@ const ExchangeRate = (props) => {
             if (current === "targetAmount") {
                 calcAmount = Number(property.convertedVal) / currRate;
                 targetAmount = calcAmount * convRate;
-                setProperty({...property, amount: targetAmount})
+                setProperty({ ...property, amount: targetAmount })
             } else {
                 calcAmount = Number(property.amount) / currRate;
                 targetAmount = calcAmount * convRate;
-                setProperty({...property, convertedVal: targetAmount})
+                setProperty({ ...property, convertedVal: targetAmount })
             }
         }
     }
@@ -113,7 +113,7 @@ const ExchangeRate = (props) => {
             />
             <Container>
                 <Paper elevation={3} className={classes.paperStyle}>
-                <Grid container>
+                    <Grid container>
                         <Grid>
                             <h6 className={classes.timeHead}>Last Updated Time:</h6>
                             <Moment date={property.currUpdateDate} className={classes.time} />
@@ -125,35 +125,35 @@ const ExchangeRate = (props) => {
                             <InputText
                                 label="Amount"
                                 value={property.amount}
-                                Change={({ target: { value } }) => setProperty({...property,amount:value})}
+                                Change={({ target: { value } }) => setProperty({ ...property, amount: value })}
                             />
                         </Grid>
                         <Grid item xs={6}>
                             <DropDown
-                            value={property.currency}
-                            change={({ target: { value } }) => setProperty({...property,currency:value})}
-                            text="Please select your currency"
-                            list={property.currencies}
+                                value={property.currency}
+                                change={({ target: { value } }) => setProperty({ ...property, currency: value })}
+                                text="Please select your currency"
+                                list={property.currencies}
                             />
                         </Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
+                    </Grid>
+                    <Grid container spacing={2}>
                         <Grid item xs={6}>
-                        <InputText
+                            <InputText
                                 label="Converted Amount"
                                 value={property.convertedVal}
                                 disabled={true}
                             />
                         </Grid>
                         <Grid item xs={6}>
-                        <DropDown
-                            value={property.convertTo}
-                            change={({ target: { value } }) => setProperty({...property,convertTo:value})}
-                            text="Select Currency to convert"
-                            list={property.currencies}
+                            <DropDown
+                                value={property.convertTo}
+                                change={({ target: { value } }) => setProperty({ ...property, convertTo: value })}
+                                text="Select Currency to convert"
+                                list={property.currencies}
                             />
                         </Grid>
-                        </Grid>
+                    </Grid>
                 </Paper>
             </Container>
         </Grid>

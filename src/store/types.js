@@ -1,3 +1,3 @@
-export const RATES_GET_ALL = 'RATES_GET_ALL';
-export const RATES_SET_ALL = 'RATES_SET_ALL';
+export const GET_RATES = 'GET_RATES';
+export const SET_RATES = 'SET_RATES';
 export const GET_ERROR = 'GET_ERROR';

@@ -1,19 +1,19 @@
-import { RATES_GET_ALL, RATES_SET_ALL, GET_ERROR } from "../types";
+import { GET_RATES, SET_RATES, GET_ERROR } from "../types";
 
-export const getAllRates = (rates) => {
+export const getRates = (rates) => {
     return {
-        type: RATES_GET_ALL,
+        type: GET_RATES,
         payload: rates
     }
 }
 
-export const setAllRates = (rates) => {
+export const setRates = (rates) => {
     return {
-        type: RATES_SET_ALL,
+        type: SET_RATES,
         payload: rates
     }
 }
-export const getError = (error) => {
+export const getRates_Error = (error) => {
     return {
         type: GET_ERROR,
         payload: error

@@ -1,10 +1,10 @@
 import { takeEvery, all } from 'redux-saga/effects';
 
-import { RATES_GET_ALL } from '../types';
-import { getAllRatesSaga } from './rates';
+import { GET_RATES } from '../types';
+import { getRatesSaga } from './rates';
 
 export function* watchRates() {
     yield all([
-        takeEvery(RATES_GET_ALL, getAllRatesSaga)
+        takeEvery(GET_RATES, getRatesSaga)
     ]);
 }
