@@ -6,93 +6,76 @@ import { getAllRates } from '../store/actions';
 import Moment from 'react-moment';
 import useStyles from './styles';
 
-var currencies = [];
-var Rates;
-
 const ExchangeRate = (props) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const [open, setOpen] = React.useState(false);
-    const [currency, setCurrency] = React.useState('USD');
-    const [convertTo, setConversion] = React.useState('TRY');
-    const [amount, setAmount] = React.useState(0);
-    const [convertedVal, setConverted] = React.useState(0);
-    const [currUpdateDate, setDate] = useState(Date.now())
 
+    const [currencies, setCurrencies] = useState([]);
+    const [Rates, setRates] = useState(null);
+    const [open, setOpen] = useState(false);
+    const [currency, setCurrency] = useState('USD');
+    const [convertTo, setConversion] = useState('PKR');
+    const [amount, setAmount] = useState(0);
+    const [convertedVal, setConverted] = useState(0);
+    const [currUpdateDate, setDate] = useState(Date.now())
+    const [error, setError] = useState('')
+
+    // handling close
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
         }
-
         setOpen(false);
     };
 
+    // calling api on componentDidMount
     useEffect(() => {
-        setTimeout(() => {
-            dispatch(getAllRates())
-        }, 1500)
+        dispatch(getAllRates());
     }, []);
 
-    const rate = useSelector(({ rate }) => rate)
+    // getting rate from reducer
+    const rate = useSelector(({ rate }) => rate);
 
+    // once got rates/ api called, set initials
     useEffect(() => {
         if (rate && rate.rates) {
-            const resp = rate.rates;
-            if (rate.rates.rates) {
-                const currRate = rate.rates.rates;
-                var currSym = Object.keys(currRate);
-                Rates = currRate
-
-                for (var i = 0; i < currSym.length; i++) {
-                    let resp = {
-                        value: currSym[i],
-                        label: currSym[i],
-                    }
-                    currencies.push(resp);
-                }
-            }
-            setDate(resp.time_last_update_utc)
+            const { rates } = rate;
+            setRates(rates.rates);
+            setCurrencies(Object.keys(rates.rates));
+            setDate(rates.time_last_update_utc)
         }
         if (rate.error) {
+            setError(rate.error.message)
             setOpen(true)
         }
     }, [rate]);
 
+    // on chnage amount or source currency or target current do calculation
     useEffect(() => {
         convertAmount("sourceAmount");
-    }, [amount])
+    }, [amount, currency, convertTo]);
 
-    useEffect(() => {
-        convertAmount("sourceAmount");
-    }, [amount], [currency], [convertTo])
-
+    // conversation calculation
     const convertAmount = (current) => {
-        // console.log('Rates ', Rates);
         if (Rates) {
-            var curr = currency.toLowerCase();
-            var convCurr = convertTo.toLowerCase();
-            var currAmount = Number(amount);
-            var convertedAmount = Number(convertedVal);
             var currRate, convRate, calcAmount, targetAmount;
 
             Object.keys(Rates).forEach((key) => {
-                if (key.toLowerCase() === curr) {
+                if (key.toLowerCase() === currency.toLowerCase()) {
                     currRate = Rates[key];
                     return Number(currRate);
                 }
-                if (key.toLowerCase() === convCurr) {
+                if (key.toLowerCase() === convertTo.toLowerCase()) {
                     convRate = Rates[key];
                     return Number(convRate);
                 }
             })
             if (current === "targetAmount") {
-                console.log("target")
-                calcAmount = convertedAmount / currRate;
+                calcAmount = Number(convertedVal) / currRate;
                 targetAmount = calcAmount * convRate;
                 setAmount(targetAmount)
             } else {
-                console.log("source")
-                calcAmount = currAmount / currRate;
+                calcAmount = Number(amount) / currRate;
                 targetAmount = calcAmount * convRate;
                 setConverted(targetAmount)
             }
@@ -103,18 +86,15 @@ const ExchangeRate = (props) => {
         <div className={classes.root}>
             <Snackbar
                 anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
+                    vertical: 'top',
+                    horizontal: 'right',
                 }}
                 open={open}
                 autoHideDuration={6000}
                 onClose={handleClose}
-                message="Note archived"
+                message={error}
                 action={
                     <React.Fragment>
-                        <Button color="secondary" size="small" onClick={handleClose}>
-                            UNDO
-                        </Button>
                         <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
                             <CloseIcon fontSize="small" />
                         </IconButton>
@@ -150,21 +130,19 @@ const ExchangeRate = (props) => {
                                 onChange={({ target: { value } }) => setCurrency(value)}
                                 helperText="Please select your currency"
                             >
-                                {currencies.map((option, index) => (
-                                    <MenuItem key={index} value={option.value}>
-                                        {option.label}
+                                {currencies.map((item, index) => (
+                                    <MenuItem key={index} value={item}>
+                                        {item}
                                     </MenuItem>
                                 ))}
                             </TextField>
                         </div>
                         <div className="col-sm-6 col-6">
                             <TextField
-                                // label="Convert To"
                                 value={convertedVal}
                                 id="outlined-size-small"
                                 variant="outlined"
                                 size="small"
-                                onChange={(e) => { setConverted(e.target.value); convertAmount("targetAmount") }}
                             />
                         </div>
                         <div className="col-sm-6 col-6">
@@ -175,9 +153,9 @@ const ExchangeRate = (props) => {
                                 onChange={(e) => { setConversion(e.target.value); convertAmount() }}
                                 helperText="Please select your currency"
                             >
-                                {currencies.map((option, index) => (
-                                    <MenuItem key={index} value={option.value}>
-                                        {option.label}
+                                {currencies.map((item, index) => (
+                                    <MenuItem key={index} value={item}>
+                                        {item}
                                     </MenuItem>
                                 ))}
                             </TextField>
