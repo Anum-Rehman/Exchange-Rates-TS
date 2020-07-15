@@ -6,6 +6,7 @@ const initialState = {
     error: null
 };
 
+//reducer function for rates
 export const rateReducer = (state = initialState, action) => {
 
     switch (action.type) {

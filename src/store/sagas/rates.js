@@ -3,6 +3,7 @@ import { put } from "redux-saga/effects";
 import * as actions from "../actions";
 import { getRates } from "../../utils/consts/api";
 
+//calling saga functions 
 export function* getRatesSaga() {
   try {
     const resp = yield getRates();
