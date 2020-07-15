@@ -10,6 +10,14 @@ const useStyles = makeStyles((theme) => ({
         padding: 20,
         width: 400,
         margin: 'auto'
+    },
+    timeHead: {
+        fontSize: 20,
+        fontFamily: "Times New Roman"
+    },
+    time: {
+        color: 'gray',
+        fontFamily: "Times New Roman"
     }
 }));
 

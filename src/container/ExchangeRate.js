@@ -3,6 +3,7 @@ import { Snackbar, Button, IconButton, TextField, MenuItem, Paper } from '@mater
 import CloseIcon from '@material-ui/icons/Close';
 import { useDispatch, useSelector } from 'react-redux'
 import { getAllRates } from '../store/actions';
+import Moment from 'react-moment';
 import useStyles from './styles';
 
 var currencies = [];
@@ -14,8 +15,9 @@ const ExchangeRate = (props) => {
     const [open, setOpen] = React.useState(false);
     const [currency, setCurrency] = React.useState('USD');
     const [convertTo, setConversion] = React.useState('AED');
-    const [value, setValue] = React.useState(0.00);
-    const [convertedVal, setConverted] = React.useState(0.00);
+    const [amount, setAmount] = React.useState(0);
+    const [convertedVal, setConverted] = React.useState(0);
+    const [currUpdateDate, setDate] = useState(Date.now())
 
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
@@ -32,18 +34,23 @@ const ExchangeRate = (props) => {
     
     useSelector(({ rate }) => {
         if(rate.rates){
-            const currRate = rate.rates;
-            var currSym = Object.keys(currRate);
-            Rates = currRate
-
-            for(var i=0; i< currSym.length; i++){
-                let resp = {
-                    value: currSym[i],
-                    label: currSym[i],
+            const resp = rate.rates;
+            if(rate.rates.rates){
+                const currRate = rate.rates.rates;
+                console.log(rate,"rate")
+                var currSym = Object.keys(currRate);
+                Rates = currRate
+    
+                for(var i=0; i< currSym.length; i++){
+                    let resp = {
+                        value: currSym[i],
+                        label: currSym[i],
+                    }
+                    currencies.push(resp);
                 }
-                currencies.push(resp);
+                return currencies
             }
-            return currencies
+            setDate(resp.time_last_update_utc)
         }
         if(rate.error){
             setOpen(true)
@@ -56,11 +63,12 @@ const ExchangeRate = (props) => {
         convertAmount();
     };
 
-    const convertAmount = () =>{
+    const convertAmount = (current) =>{
         var curr = currency.toLowerCase();
         var convCurr = convertTo.toLowerCase();
-        var amount = Number(value);
-        var currRate, convRate;
+        var currAmount = Number(amount);
+        var convertedAmount = Number(convertedVal);
+        var currRate, convRate, calcAmount, targetAmount;
 
         Object.keys(Rates).forEach((key)=>{
             if(key.toLowerCase() == curr){
@@ -72,9 +80,16 @@ const ExchangeRate = (props) => {
                 return Number(convRate);
             }
         })
-        var calcAmount = amount/currRate;
-        var targetAmount = calcAmount * convRate;
-        setConverted(targetAmount)
+        if(current === "targetAmount"){
+            calcAmount = convertedAmount/currRate;
+            targetAmount = calcAmount * convRate;
+            setAmount(targetAmount)
+        }
+        else{
+            calcAmount = currAmount/currRate;
+            targetAmount = calcAmount * convRate;
+            setConverted(targetAmount)
+        }
     }
     return (
         <div className={classes.root}>
@@ -101,15 +116,21 @@ const ExchangeRate = (props) => {
             <div className="container">
                 <Paper elevation={3} className={classes.paperStyle}>
                     <div className="row">
+                        <div className="col-sm-12 col-12">
+                            <h6 className={classes.timeHead}>Last Updated Time:</h6>
+                            <Moment date={currUpdateDate} className={classes.time}/>
+                            </div>
+                    </div>
+                    <br/>
+                    <div className="row">
                         <div className="col-sm-6 col-6">
                             <TextField
                                 label="Amount"
                                 id="outlined-size-small"
-                                defaultValue="0.00"
                                 variant="outlined"
                                 size="small"
-                                value= {value}
-                                onChange={(e)=>{setValue(e.target.value); convertAmount()}}
+                                value= {amount}
+                                onChange={(e)=>{setAmount(e.target.value); convertAmount("sourceAmount")}}
                             />
                         </div>
                         <div className="col-sm-6 col-6">
@@ -131,11 +152,10 @@ const ExchangeRate = (props) => {
                             <TextField
                                 label="Convert To"
                                 value={convertedVal}
-                                disabled={true}
                                 id="outlined-size-small"
-                                defaultValue="Small"
                                 variant="outlined"
                                 size="small"
+                                onChange={(e)=>{setConverted(e.target.value); convertAmount("targetAmount")}}
                             />
                         </div>
                         <div className="col-sm-6 col-6">

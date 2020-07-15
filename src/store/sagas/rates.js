@@ -7,7 +7,7 @@ import { getRates, setRates } from "../../utils/consts/api";
 export function* getAllRatesSaga() {
   try {
     const resp = yield getRates();
-    yield put(actions.setAllRates(resp.rates));
+    yield put(actions.setAllRates(resp));
   } catch (error) {
     reject(error);
   }
