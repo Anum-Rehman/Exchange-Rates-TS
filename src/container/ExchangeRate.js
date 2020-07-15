@@ -14,7 +14,7 @@ const ExchangeRate = (props) => {
     const dispatch = useDispatch();
     const [open, setOpen] = React.useState(false);
     const [currency, setCurrency] = React.useState('USD');
-    const [convertTo, setConversion] = React.useState('AED');
+    const [convertTo, setConversion] = React.useState('TRY');
     const [amount, setAmount] = React.useState(0);
     const [convertedVal, setConverted] = React.useState(0);
     const [currUpdateDate, setDate] = useState(Date.now())
@@ -26,71 +26,81 @@ const ExchangeRate = (props) => {
 
         setOpen(false);
     };
+
     useEffect(() => {
         setTimeout(() => {
             dispatch(getAllRates())
         }, 1500)
     }, []);
-    
-    useSelector(({ rate }) => {
-        if(rate.rates){
+
+    const rate = useSelector(({ rate }) => rate)
+
+    useEffect(() => {
+        if (rate && rate.rates) {
             const resp = rate.rates;
-            if(rate.rates.rates){
+            if (rate.rates.rates) {
                 const currRate = rate.rates.rates;
-                console.log(rate,"rate")
+
                 var currSym = Object.keys(currRate);
                 Rates = currRate
-    
-                for(var i=0; i< currSym.length; i++){
+
+                for (var i = 0; i < currSym.length; i++) {
                     let resp = {
                         value: currSym[i],
                         label: currSym[i],
                     }
                     currencies.push(resp);
                 }
-                return currencies
             }
             setDate(resp.time_last_update_utc)
         }
-        if(rate.error){
+        if (rate.error) {
             setOpen(true)
         }
-    }
-    )
+    }, [rate]);
+
+    useEffect(() => {
+        convertAmount("sourceAmount");
+    }, [amount])
 
     const handleChange = (event) => {
         setCurrency(event.target.value);
         convertAmount();
     };
 
-    const convertAmount = (current) =>{
-        var curr = currency.toLowerCase();
-        var convCurr = convertTo.toLowerCase();
-        var currAmount = Number(amount);
-        var convertedAmount = Number(convertedVal);
-        var currRate, convRate, calcAmount, targetAmount;
+    const convertAmount = (current) => {
+        // console.log('Rates ', Rates);
+        if (Rates) {
+            var curr = currency.toLowerCase();
+            var convCurr = convertTo.toLowerCase();
+            var currAmount = Number(amount);
+            var convertedAmount = Number(convertedVal);
+            var currRate, convRate, calcAmount, targetAmount;
 
-        Object.keys(Rates).forEach((key)=>{
-            if(key.toLowerCase() == curr){
-                currRate = Rates[key];
-                return Number(currRate);
+            Object.keys(Rates).forEach((key) => {
+                if (key.toLowerCase() === curr) {
+                    currRate = Rates[key];
+                    return Number(currRate);
+                }
+                if (key.toLowerCase() === convCurr) {
+                    convRate = Rates[key];
+                    return Number(convRate);
+                }
+            })
+            if (current === "targetAmount") {
+                console.log("target")
+                calcAmount = convertedAmount / currRate;
+                targetAmount = calcAmount * convRate;
+                setAmount(targetAmount)
+            } else {
+                console.log("source")
+                calcAmount = currAmount / currRate;
+                targetAmount = calcAmount * convRate;
+                setConverted(targetAmount)
             }
-            if(key.toLowerCase() == convCurr){
-                convRate = Rates[key];
-                return Number(convRate);
-            }
-        })
-        if(current === "targetAmount"){
-            calcAmount = convertedAmount/currRate;
-            targetAmount = calcAmount * convRate;
-            setAmount(targetAmount)
-        }
-        else{
-            calcAmount = currAmount/currRate;
-            targetAmount = calcAmount * convRate;
-            setConverted(targetAmount)
         }
     }
+
     return (
         <div className={classes.root}>
             <Snackbar
@@ -106,7 +116,7 @@ const ExchangeRate = (props) => {
                     <React.Fragment>
                         <Button color="secondary" size="small" onClick={handleClose}>
                             UNDO
-            </Button>
+                        </Button>
                         <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
                             <CloseIcon fontSize="small" />
                         </IconButton>
@@ -118,10 +128,10 @@ const ExchangeRate = (props) => {
                     <div className="row">
                         <div className="col-sm-12 col-12">
                             <h6 className={classes.timeHead}>Last Updated Time:</h6>
-                            <Moment date={currUpdateDate} className={classes.time}/>
-                            </div>
+                            <Moment date={currUpdateDate} className={classes.time} />
+                        </div>
                     </div>
-                    <br/>
+                    <br />
                     <div className="row">
                         <div className="col-sm-6 col-6">
                             <TextField
@@ -129,8 +139,8 @@ const ExchangeRate = (props) => {
                                 id="outlined-size-small"
                                 variant="outlined"
                                 size="small"
-                                value= {amount}
-                                onChange={(e)=>{setAmount(e.target.value); convertAmount("sourceAmount")}}
+                                value={amount}
+                                onChange={({ target: { value } }) => setAmount(value)}
                             />
                         </div>
                         <div className="col-sm-6 col-6">
@@ -142,20 +152,20 @@ const ExchangeRate = (props) => {
                                 helperText="Please select your currency"
                             >
                                 {currencies.map((option, index) => (
-                        <MenuItem key={index} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
+                                    <MenuItem key={index} value={option.value}>
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
                             </TextField>
                         </div>
                         <div className="col-sm-6 col-6">
                             <TextField
-                                label="Convert To"
+                                // label="Convert To"
                                 value={convertedVal}
                                 id="outlined-size-small"
                                 variant="outlined"
                                 size="small"
-                                onChange={(e)=>{setConverted(e.target.value); convertAmount("targetAmount")}}
+                                onChange={(e) => { setConverted(e.target.value); convertAmount("targetAmount") }}
                             />
                         </div>
                         <div className="col-sm-6 col-6">
@@ -163,14 +173,14 @@ const ExchangeRate = (props) => {
                                 id="standard-select-currency"
                                 select
                                 value={convertTo}
-                                onChange={(e)=>{setConversion(e.target.value); convertAmount()}}
-                                helperText="Please select conversion rate"
+                                onChange={(e) => { setConversion(e.target.value); convertAmount() }}
+                                helperText="Please select your currency"
                             >
                                 {currencies.map((option, index) => (
-                        <MenuItem key={index} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
+                                    <MenuItem key={index} value={option.value}>
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
                             </TextField>
                         </div>
                     </div>
