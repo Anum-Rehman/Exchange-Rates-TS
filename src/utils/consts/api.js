@@ -13,11 +13,3 @@ function _errorHandler(err) {
       .then(({ data }) => data)
     .catch(_errorHandler);
   }
-
-  export function setRates(givenRates){
-      return axios
-      .post(API_URL, { ...givenRates })
-      .then(({ data }) => data)
-    .catch(_errorHandler);
-
-  }

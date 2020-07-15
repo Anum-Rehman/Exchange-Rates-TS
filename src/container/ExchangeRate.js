@@ -1,24 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Snackbar, Button, IconButton, TextField, MenuItem, Paper } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import { useDispatch, useSelector } from 'react-redux'
 import { getAllRates } from '../store/actions';
+import useStyles from './styles';
 
 var currencies = [];
 var Rates;
-const useStyles = makeStyles((theme) => ({
-    root: {
-        display: 'flex',
-        flexWrap: 'wrap',
-    },
-    paperStyle: {
-        marginTop: 20,
-        padding: 20,
-        width: 400,
-        margin: 'auto'
-    }
-}));
 
 const ExchangeRate = (props) => {
     const classes = useStyles();
