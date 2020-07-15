@@ -4,6 +4,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         flexWrap: 'wrap',
+        flexGrow: 1
     },
     paperStyle: {
         marginTop: 20,
