@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Paper, Container } from '@material-ui/core';
+import { Snackbar, Grid, IconButton, TextField, MenuItem, Paper, Container } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import { useDispatch, useSelector } from 'react-redux'
 import { getRates } from '../store/actions';
 import Moment from 'react-moment';
@@ -80,12 +81,14 @@ const ExchangeRate = (props) => {
                     return Number(convRate);
                 }
                 if(property.currency.toLowerCase() === property.convertTo.toLowerCase()){
-                    return convRate=1;
+                    return targetAmount=property.amount;
                 }
             })
 
-            calcAmount = Number(property.amount) / currRate;
+            if(convRate !== undefined){
+                calcAmount = Number(property.amount) / currRate;
             targetAmount = parseFloat(calcAmount * convRate).toFixed(2);
+            }
             setProperty({ ...property, convertedVal: targetAmount })
         }
     }
