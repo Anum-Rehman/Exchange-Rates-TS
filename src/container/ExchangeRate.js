@@ -63,11 +63,11 @@ const ExchangeRate = (props) => {
 
     // on chnage amount or source currency or target current do calculation
     useEffect(() => {
-        convertAmount("sourceAmount");
+        convertAmount();
     }, [property.amount, property.currency, property.convertTo]);
 
     // conversation calculation
-    const convertAmount = (current) => {
+    const convertAmount = () => {
         if (property.Rates) {
             var currRate, convRate, calcAmount, targetAmount;
 
@@ -80,34 +80,32 @@ const ExchangeRate = (props) => {
                     convRate = property.Rates[key];
                     return Number(convRate);
                 }
+                if(property.currency.toLowerCase() === property.convertTo.toLowerCase()){
+                    return convRate=1;
+                }
             })
-            if (current === "targetAmount") {
-                calcAmount = Number(property.convertedVal) / currRate;
-                targetAmount = calcAmount * convRate;
-                setProperty({ ...property, amount: targetAmount })
-            } else {
-                calcAmount = Number(property.amount) / currRate;
-                targetAmount = parseFloat(calcAmount * convRate).toFixed(2);
-                setProperty({ ...property, convertedVal: targetAmount })
-            }
+
+            calcAmount = Number(property.amount) / currRate;
+            targetAmount = parseFloat(calcAmount * convRate).toFixed(2);
+            setProperty({ ...property, convertedVal: targetAmount })
         }
     }
 
     return (
         <Grid className={classes.root}>
             <Toaster
-            property={property}
-            close={handleClose}
-            onClick={handleClose}
+                property={property}
+                close={handleClose}
+                onClick={handleClose}
             />
-         
+
             <Container>
                 <Paper elevation={3} className={classes.paperStyle}>
                     <Grid container className={classes.timeContainer}>
-                            <h6 className={classes.timeHead}>Last Updated Time:</h6>
-                            <Moment date={property.currUpdateDate} className={classes.time} />
+                        <h6 className={classes.timeHead}>Last Updated Time:</h6>
+                        <Moment date={property.currUpdateDate} className={classes.time} />
                     </Grid>
-                    
+
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
                             <InputText
