@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Snackbar, Grid, IconButton, TextField, MenuItem, Paper, Container } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { Grid, Paper, Container } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux'
 import { getRates } from '../store/actions';
 import Moment from 'react-moment';
@@ -96,18 +95,18 @@ const ExchangeRate = (props) => {
     return (
         <Grid className={classes.root}>
             <Toaster
-            property={property}
-            close={handleClose}
-            onClick={handleClose}
+                property={property}
+                close={handleClose}
+                onClick={handleClose}
             />
-         
+
             <Container>
                 <Paper elevation={3} className={classes.paperStyle}>
                     <Grid container className={classes.timeContainer}>
-                            <h6 className={classes.timeHead}>Last Updated Time:</h6>
-                            <Moment date={property.currUpdateDate} className={classes.time} />
+                        <h6 className={classes.timeHead}>Last Updated Time:</h6>
+                        <Moment date={property.currUpdateDate} className={classes.time} />
                     </Grid>
-                    
+
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
                             <InputText
