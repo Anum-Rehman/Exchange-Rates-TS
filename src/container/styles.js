@@ -14,11 +14,16 @@ const useStyles = makeStyles((theme) => ({
     },
     timeHead: {
         fontSize: 20,
-        fontFamily: "Times New Roman"
+        fontFamily: "Times New Roman",
+        marginBottom: 10
     },
     time: {
         color: 'gray',
-        fontFamily: "Times New Roman"
+        fontFamily: "Times New Roman",
+    },
+    timeContainer:{
+        marginTop: -20,
+        marginBottom: 30
     }
 }));
 

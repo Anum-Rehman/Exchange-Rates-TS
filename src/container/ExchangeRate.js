@@ -113,13 +113,11 @@ const ExchangeRate = (props) => {
             />
             <Container>
                 <Paper elevation={3} className={classes.paperStyle}>
-                    <Grid container>
-                        <Grid>
+                    <Grid container className={classes.timeContainer}>
                             <h6 className={classes.timeHead}>Last Updated Time:</h6>
                             <Moment date={property.currUpdateDate} className={classes.time} />
-                        </Grid>
                     </Grid>
-                    <br />
+                    
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
                             <InputText
