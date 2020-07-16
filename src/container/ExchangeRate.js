@@ -7,6 +7,7 @@ import Moment from 'react-moment';
 import useStyles from './styles';
 import InputText from '../components/InputText'
 import DropDown from '../components/Dropdown'
+import Toaster from '../components/Toaster'
 
 const ExchangeRate = (props) => {
     const classes = useStyles();
@@ -94,32 +95,19 @@ const ExchangeRate = (props) => {
 
     return (
         <Grid className={classes.root}>
-            <Snackbar
-                anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                }}
-                open={property.open}
-                autoHideDuration={6000}
-                onClose={handleClose}
-                message={property.error}
-                action={
-                    <React.Fragment>
-                        <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
-                            <CloseIcon fontSize="small" />
-                        </IconButton>
-                    </React.Fragment>
-                }
+            <Toaster
+            property={property}
+            close={handleClose}
+            onClick={handleClose}
             />
+         
             <Container>
                 <Paper elevation={3} className={classes.paperStyle}>
-                    <Grid container>
-                        <Grid>
+                    <Grid container className={classes.timeContainer}>
                             <h6 className={classes.timeHead}>Last Updated Time:</h6>
                             <Moment date={property.currUpdateDate} className={classes.time} />
-                        </Grid>
                     </Grid>
-                    <br />
+                    
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
                             <InputText
